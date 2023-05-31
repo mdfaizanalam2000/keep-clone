@@ -1,24 +1,60 @@
-import logo from './logo.svg';
 import './App.css';
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+import CreateNote from './components/CreateNote';
+import Note from './components/Note';
+import { useState } from 'react';
 
 function App() {
+  const [note, setNote] = useState({
+    title: "",
+    body: ""
+  })
+
+  const userInput = (event) => {
+    let { name, value } = event.target;
+    setNote((prevData) => {
+      return { ...prevData, [name]: value }
+    });
+  }
+
+  const [arrNote, setArrNote] = useState([]);
+  const addNote = (event) => {
+    event.preventDefault();
+    console.log(note);
+    if (note.title === "" || note.body === "") {
+      alert("Cannot save empty note");
+    }
+    else {
+      setArrNote((prevData) => {
+        return [note, ...prevData]
+      })
+      setNote({
+        title: "",
+        body: ""
+      })
+    }
+  }
+
+  const deleteNote = (selectedIndex) => {
+    setArrNote(arrNote.filter((item, index) => {
+      return selectedIndex !== index;
+    }))
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <Navbar />
+      <CreateNote title={note.title} body={note.body} userInput={userInput} addNote={addNote} />
+      <div className="container">
+        <div className="row">
+          {arrNote.map((item, index) => {
+            return <Note title={item.title} body={item.body} key={index} deleteNote={deleteNote} index={index} />
+          })}
+        </div>
+      </div>
+      <Footer />
+    </>
   );
 }
 
